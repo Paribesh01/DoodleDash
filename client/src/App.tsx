@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Home from "./components/Home"
-import Game from "./components/Game"
 import "./index.css"
+import Playground from "./components/PlayGround"
 
 function App() {
 
@@ -11,7 +11,7 @@ function App() {
 
         <Routes>
           < Route path="/" element={<Home />} />
-          < Route path="/game/:id" element={<Game />} />
+          < Route path="/game/:id" element={<Playground />} />
 
 
         </Routes>
