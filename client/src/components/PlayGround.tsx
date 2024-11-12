@@ -17,6 +17,7 @@ export default function Playground() {
     const [currentPlayer, setCurrentPlayer] = useState("");
     const [word, setWord] = useState("");
     const [gameStarted, setGameStarted] = useState<boolean>(false);
+    const [gameOver, setGameOver] = useState<boolean>(false);
     const [chat, setChat] = useState<{ userId: string; message: string }[]>([]);
 
     const clearCanvas = () => {
@@ -106,7 +107,14 @@ export default function Playground() {
                     }
                     break;
                 case "roomCreated":
+                    setRoomId(parsedMessage.game.roomid);
+                    setPlayers(parsedMessage.game.players)
+                    break;
                 case "joinedRoom":
+                    setRoomId(parsedMessage.game.roomid)
+                    setPlayers(parsedMessage.game.players)
+
+                    break;
                 case "playerJoined":
                     setRoomId(parsedMessage.game.roomid);
                     setPlayers(parsedMessage.game.players);
@@ -129,6 +137,17 @@ export default function Playground() {
                     break;
                 case "nextTurn":
                     setWord("********");
+                    break;
+                case "gameOver":
+                    if (parsedMessage.winner) {
+                        alert(`Winner is ${parsedMessage.winner.id} with point ${parsedMessage.winner.points}`)
+                        navigate("/")
+                    } else {
+                        alert(`NO Winner`)
+                        navigate("/")
+                    }
+                    setGameOver(true);
+                    setGameStarted(false);
                     break;
                 case "chatMessage":
                     setChat(prev => [...prev, { userId: parsedMessage.userId ?? "Unknown", message: parsedMessage.message }]);
