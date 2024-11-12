@@ -1,34 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-const useSocket = () => {
-    const [ws, setWs] = useState<WebSocket | null>(null);
+const WS_URL = import.meta.env.VITE_APP_WS_URL ?? 'ws://localhost:8081';
+
+export const useSocket = () => {
+    const [socket, setSocket] = useState<WebSocket | null>(null);
 
     useEffect(() => {
-        const websocket = new WebSocket("ws://localhost:8081");
+        const ws = new WebSocket(WS_URL);
 
-        setWs(websocket);
-        console.log("Connected to WebSocket");
-        websocket.onclose = () => {
-            console.log("web socket removed")
-            setWs(null)
-        }
-
-        // websocket.onmessage = function (event) {
-        //     console.log("WebSocket message received");
-        //     console.log("Message data:", event.data);
-        // };
-        websocket.onerror = (e) => {
-            console.log("Error in WebSocket", e);
+        ws.onopen = () => {
+            setSocket(ws);
         };
 
-        // Cleanup function to close the WebSocket when the component unmounts
+        ws.onclose = () => {
+            setSocket(null);
+        };
+
         return () => {
-            websocket.close();
-            console.log("WebSocket closed");
+            ws.close();
         };
-    }, []); // Empty dependency array means this effect runs only once on mount and cleanup on unmount
+    }, []);
 
-    return ws;
+    return socket;
 };
-
-export default useSocket;
