@@ -124,6 +124,8 @@ export default function Playground() {
             socket?.send(
               JSON.stringify({ action: "joinRoom", userId, roomid: id })
             );
+          } else if (id == "randomRoom") {
+            JSON.stringify({ action: "joinRoom", userId });
           }
           break;
         case "roomCreated":

@@ -96,7 +96,11 @@ export class GameManager {
           this.createRoom(userId);
           break;
         case "joinRoom":
-          this.joinRoom(userId, roomid);
+          if (roomid) {
+            this.joinRoom(userId, roomid);
+          } else {
+            this.joinRandomRoom(userId);
+          }
           break;
         case "startGame":
           this.startGame(userId, roomid);
@@ -283,6 +287,51 @@ export class GameManager {
         player.points += 1;
         console.log(`User ID: ${userId} gained a point in room ID: ${roomid}`);
       }
+    }
+  }
+  getRandomAvailableRoom(): Game | null {
+    const availableRooms = this.games.filter((game) => game.players.length < 4);
+
+    if (availableRooms.length === 0) {
+      return null;
+    }
+
+    const randomRoom =
+      availableRooms[Math.floor(Math.random() * availableRooms.length)];
+    return randomRoom;
+  }
+
+  joinRandomRoom(userId: string) {
+    const randomRoom = this.getRandomAvailableRoom();
+
+    if (randomRoom) {
+      if (randomRoom.players.length < 4) {
+        const userWs = this.getUserSocket(userId);
+        if (!userWs) {
+          this.notifyUser(userId, { status: "webSocketNotFound" });
+          return;
+        }
+
+        randomRoom.players.push({ id: userId, ws: userWs, points: 0 });
+
+        this.notifyUser(userId, {
+          status: "joinedRandomRoom",
+          game: randomRoom,
+        });
+        this.notifyAllUsersInRoom(randomRoom.roomid, {
+          status: "playerJoined",
+          game: randomRoom,
+        });
+
+        console.log(`User ${userId} joined random room ${randomRoom.roomid}`);
+
+        if (randomRoom.players.length === 4) {
+          this.startGame(userId, randomRoom.roomid);
+        }
+      }
+    } else {
+      this.createRoom(userId);
+      console.log(`No available room, creating a new room for user ${userId}`);
     }
   }
 
