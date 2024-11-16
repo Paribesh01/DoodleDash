@@ -120,12 +120,12 @@ export default function Playground() {
           setUserId(parsedMessage.userId);
           if (id === "createRoom") {
             socket?.send(JSON.stringify({ action: "createRoom", userId }));
+          } else if (id == "randomRoom") {
+            socket?.send(JSON.stringify({ action: "joinRoom", userId }));
           } else if (id) {
             socket?.send(
               JSON.stringify({ action: "joinRoom", userId, roomid: id })
             );
-          } else if (id == "randomRoom") {
-            JSON.stringify({ action: "joinRoom", userId });
           }
           break;
         case "roomCreated":
