@@ -42,13 +42,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: SSH into Server and Pull Docker Image
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            docker pull ${{ secrets.DOCKER_USERNAME }}/ws-server:latest
-            docker stop ws-server || true
-            docker rm ws-server || true
-            docker run -d --name ws-server -p 8081:8081 ${{ secrets.DOCKER_USERNAME }}/ws-server:latest
-          EOF
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Pull Docker Image on Runner
+      run: |
+        docker pull ${{ secrets.DOCKER_USERNAME }}/ws-server:latest
+        docker stop ws-server-container || true
+        docker rm ws-server-container || true
+        docker run -d --name ws-server-container -p 8081:8081 ${{ secrets.DOCKER_USERNAME }}/ws-server:latest
