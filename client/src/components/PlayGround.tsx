@@ -18,7 +18,6 @@ export default function Playground() {
     const [currentPlayer, setCurrentPlayer] = useState("");
     const [word, setWord] = useState("");
     const [gameStarted, setGameStarted] = useState<boolean>(false);
-    const [gameOver, setGameOver] = useState<boolean>(false);
     const [chat, setChat] = useState<{ userId: string; message: string }[]>([]);
     const [Turnwinner, setTurnWinner] = useState("");
     const [TurnWord, setTurnWord] = useState("");
@@ -183,7 +182,6 @@ export default function Playground() {
                         alert(`NO Winner`);
                         navigate("/");
                     }
-                    setGameOver(true);
                     setGameStarted(false);
                     break;
                 case "gameStopped":
