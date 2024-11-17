@@ -59,9 +59,18 @@ export class GameManager {
     if (userToRemove) {
       this.games = this.games
         .map((game) => {
+          if (game.admin === userToRemove.userId) {
+            const newAdmin = game.players.find((player) => player.id !== userToRemove.userId);
+            if (newAdmin) {
+              game.admin = newAdmin.id;
+              console.log(`New admin is now: ${newAdmin.id}`);
+            }
+          }
+
           game.players = game.players.filter(
             (player) => player.id !== userToRemove.userId
           );
+
           this.notifyAllUsersInRoom(game.roomid, {
             status: "playerLeft",
             leftPlayer: userToRemove.userId,
@@ -71,6 +80,11 @@ export class GameManager {
           if (game.players.length === 0) {
             console.log(`Game ${game.roomid} has ended due to no players.`);
             return null;
+          } else if (game.players.length < 4) {
+            game.started = false;
+            game.currentWord = "";
+            this.notifyAllUsersInRoom(game.roomid, { status: "gameStopped" });
+            return game;
           }
 
           return game;
@@ -84,6 +98,7 @@ export class GameManager {
 
     console.log(`User disconnected and removed`);
   }
+
 
   handleMessages(userId: string, ws: WebSocket) {
     ws.on("message", (message: string) => {
