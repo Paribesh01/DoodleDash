@@ -4,7 +4,6 @@ import { PlayerList } from "./PlayerList";
 import { Whiteboard } from "./Whiteboard";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
 export default function Playground() {
     const socket = useSocket();
@@ -230,56 +229,18 @@ export default function Playground() {
         );
     };
 
-    const WinnerOverlay = ({
-        winner,
-        word,
-        isOpen,
-        onClose,
-    }: {
-        winner: string | null;
-        word: string;
-        isOpen: boolean;
-        onClose: () => void;
-    }) => {
-        // Automatically close after 4 seconds when the overlay is opened
-        useEffect(() => {
-            if (isOpen) {
-                const timer = setTimeout(() => {
-                    onClose();
-                }, 4000); // 4 seconds
 
-                return () => clearTimeout(timer); // Clear timeout if component unmounts or isOpen changes
-            }
-        }, [isOpen, onClose]);
-        return (
-            <Dialog open={isOpen} onOpenChange={onClose}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>
-                            🎉 Winner of this Round is
-                            {Turnwinner} 🎉
-                        </DialogTitle>
-                    </DialogHeader>
-                    <p>
-                        Congratulations, <strong>{winner}</strong>!
-                    </p>
-                    <p>
-                        The word was: <strong>{word}</strong>
-                    </p>
-                </DialogContent>
-            </Dialog>
-        );
-    };
+
     if (!socket) return <div>Connecting...</div>;
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-yellow-300 to-orange-400 p-4 overflow-auto">
-            <WinnerOverlay
+            {/* <WinnerOverlay
                 winner={Turnwinner}
                 word={TurnWord}
                 isOpen={isOverlayOpen}
                 onClose={() => setIsOverlayOpen(false)}
-            />
+            /> */}
             <div className="container mx-auto grid grid-cols-1 md:grid-cols-12 gap-4 h-[calc(100vh-2rem)]">
                 {/* Chat Section */}
                 <div className="col-span-12 md:col-span-3">
@@ -294,6 +255,10 @@ export default function Playground() {
                 {/* Whiteboard Section */}
                 <div className="col-span-12 md:col-span-6">
                     <Whiteboard
+                        setIsOverlayOpen={setIsOverlayOpen}
+                        winner={Turnwinner}
+                        Turnword={TurnWord}
+                        isOpen={isOverlayOpen}
                         clear={clear}
                         word={word}
                         canvasRef={canvasRef}
